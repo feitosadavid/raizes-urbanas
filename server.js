@@ -53,6 +53,27 @@ function gerarProtocolo() {
   return `RU-${ano}-${aleatorio}`;
 }
 
+/**
+ * Retorna a data/hora atual no fuso de São Paulo (America/Sao_Paulo),
+ * no formato "AAAA-MM-DDTHH:mm:ss-03:00". O Brasil não observa mais
+ * horário de verão desde 2019, então o deslocamento é sempre -03:00.
+ */
+const formatadorSaoPaulo = new Intl.DateTimeFormat("sv-SE", {
+  timeZone: "America/Sao_Paulo",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hour12: false,
+});
+
+function agoraEmSaoPaulo() {
+  const dataHoraLocal = formatadorSaoPaulo.format(new Date()).replace(" ", "T");
+  return `${dataHoraLocal}-03:00`;
+}
+
 function responderJSON(res, status, corpo) {
   const texto = JSON.stringify(corpo);
   res.writeHead(status, { "Content-Type": "application/json; charset=utf-8" });
@@ -90,7 +111,7 @@ function tratarCadastro(req, res) {
     registros.push({
       protocolo,
       ...dados,
-      recebidoEm: new Date().toISOString(),
+      recebidoEm: agoraEmSaoPaulo(),
     });
     salvarCadastros(registros);
 

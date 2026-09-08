@@ -61,6 +61,8 @@ document.addEventListener("DOMContentLoaded", () => {
   atualizarContador();
 
   // Busca automática de endereço via ViaCEP quando o CEP estiver completo.
+  // Isso é só uma conveniência de preenchimento — não bloqueia o envio do
+  // formulário nem exige um CEP real, já que este site é para testes.
   campoCEP.addEventListener("blur", async () => {
     const cep = somenteDigitos(campoCEP.value);
     if (cep.length !== 8) return;
@@ -76,7 +78,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const resposta = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
       const dados = await resposta.json();
       if (dados.erro) {
-        avisoCEP.textContent = "CEP não encontrado — preencha o endereço manualmente.";
+        // CEP fictício ou inexistente: sem problema, o teste continua —
+        // a pessoa só preenche o endereço manualmente.
+        avisoCEP.textContent = "";
         return;
       }
       campoLogradouro.value = dados.logradouro || campoLogradouro.value;
@@ -90,8 +94,9 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("numero").focus();
       }
     } catch (falha) {
-      avisoCEP.textContent =
-        "Não foi possível consultar o CEP agora — preencha o endereço manualmente.";
+      // Falha de rede ao consultar o ViaCEP: também não bloqueia o teste,
+      // só limpa o aviso e segue com preenchimento manual.
+      avisoCEP.textContent = "";
     }
   });
 
