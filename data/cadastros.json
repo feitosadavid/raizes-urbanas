@@ -1,0 +1,25 @@
+[
+  {
+    "protocolo": "RU-2026-700167",
+    "nome": "teste",
+    "email": "teste@gmail.com",
+    "cpf": "103.360.645-60",
+    "telefone": "(12) 3456-7890",
+    "nascimento": "2010-09-08",
+    "endereco": {
+      "cep": "16011-078",
+      "logradouro": "Rua João Gonzales Munhoz",
+      "numero": "1",
+      "complemento": "teste",
+      "bairro": "Santa Luzia",
+      "cidade": "Araçatuba",
+      "uf": "SP"
+    },
+    "interesses": [
+      "Hortas comunitárias"
+    ],
+    "disponibilidade": "Manhã",
+    "mensagem": "teste",
+    "recebidoEm": "2026-09-08T22:51:25.789Z"
+  }
+]

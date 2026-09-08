@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return `RU-${ano}-${aleatorio}`;
   }
 
-  form.addEventListener("submit", (evento) => {
+  form.addEventListener("submit", async (evento) => {
     evento.preventDefault();
     limparTodosErros();
     resumoErros.hidden = true;
@@ -200,27 +200,64 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Sucesso: nada é enviado a um servidor real neste protótipo — os
-    // dados ficam apenas no localStorage do navegador, para demonstrar o
-    // fluxo completo sem precisar de um backend.
-    const protocolo = gerarProtocolo();
+    // Sucesso na validação: monta o registro e envia para o servidor, que
+    // é quem grava de fato no arquivo data/cadastros.json (veja server.js).
     const registro = {
-      protocolo,
       nome: document.getElementById("nome").value.trim(),
       email: document.getElementById("email").value.trim(),
-      cidade: document.getElementById("cidade").value.trim(),
+      cpf: campoCPF.value,
+      telefone: campoTelefone.value,
+      nascimento: campoNascimento.value,
+      endereco: {
+        cep: campoCEP.value,
+        logradouro: document.getElementById("logradouro").value.trim(),
+        numero: document.getElementById("numero").value.trim(),
+        complemento: document.getElementById("complemento").value.trim(),
+        bairro: document.getElementById("bairro").value.trim(),
+        cidade: document.getElementById("cidade").value.trim(),
+        uf: document.getElementById("uf").value.trim().toUpperCase(),
+      },
       interesses: Array.from(interessesMarcados).map((c) => c.value),
-      enviadoEm: new Date().toISOString(),
+      disponibilidade: disponibilidadeMarcada.value,
+      mensagem: campoMensagem.value.trim(),
     };
-    const registros = JSON.parse(localStorage.getItem("ru_cadastros") || "[]");
-    registros.push(registro);
-    localStorage.setItem("ru_cadastros", JSON.stringify(registros));
 
-    document.getElementById("protocolo-gerado").textContent = protocolo;
-    document.getElementById("nome-confirmado").textContent = registro.nome;
-    painelSucesso.hidden = false;
-    form.hidden = true;
-    document.querySelector(".form-intro")?.setAttribute("hidden", "");
-    painelSucesso.scrollIntoView({ behavior: "smooth", block: "start" });
+    const botaoEnviar = form.querySelector('button[type="submit"]');
+    botaoEnviar.disabled = true;
+    botaoEnviar.textContent = "Enviando…";
+
+    try {
+      const resposta = await fetch("/api/cadastro", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(registro),
+      });
+
+      if (!resposta.ok) {
+        const detalhe = await resposta.json().catch(() => ({}));
+        throw new Error(detalhe.mensagem || "O servidor recusou o cadastro.");
+      }
+
+      const { protocolo } = await resposta.json();
+      document.getElementById("protocolo-gerado").textContent = protocolo;
+      document.getElementById("nome-confirmado").textContent = registro.nome;
+      painelSucesso.hidden = false;
+      form.hidden = true;
+      document.querySelector(".form-intro")?.setAttribute("hidden", "");
+      painelSucesso.scrollIntoView({ behavior: "smooth", block: "start" });
+    } catch (falha) {
+      listaResumoErros.innerHTML = "";
+      const item = document.createElement("li");
+      item.textContent =
+        "Não foi possível enviar seu cadastro agora (" +
+        falha.message +
+        "). Verifique se o servidor local está rodando e tente novamente.";
+      listaResumoErros.appendChild(item);
+      resumoErros.hidden = false;
+      resumoErros.focus();
+    } finally {
+      botaoEnviar.disabled = false;
+      botaoEnviar.textContent = "Enviar cadastro";
+    }
   });
 });
