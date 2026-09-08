@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projetos — Raízes Urbanas</title>
+  <meta
+    name="description"
+    content="Conheça as iniciativas solidárias da Raízes Urbanas: hortas comunitárias, mutirões de plantio, capacitação em agroecologia e banco de alimentos."
+  />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600&family=Work+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <a class="pular-conteudo" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="cabecalho">
+    <div class="container cabecalho__linha">
+      <a href="index.html" class="marca">
+        <svg viewBox="0 0 48 48" aria-hidden="true">
+          <path
+            fill="#1b3b2f"
+            d="M24 4c8 6 14 14 14 22a14 14 0 0 1-28 0c0-8 6-16 14-22Z"
+          />
+        </svg>
+        Raízes Urbanas
+      </a>
+      <button class="menu-alternar" aria-expanded="false" aria-controls="nav-principal">
+        Menu
+      </button>
+      <nav id="nav-principal" class="nav-principal" aria-label="Navegação principal">
+        <ul>
+          <li><a href="index.html">Início</a></li>
+          <li><a href="projetos.html" aria-current="page">Projetos</a></li>
+          <li><a href="cadastro.html" class="nav-cta">Quero ajudar</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo">
+    <section class="projetos-intro container">
+      <h1>Iniciativas solidárias</h1>
+      <p>
+        Cada projeto nasce de uma necessidade concreta identificada com os moradores dos
+        bairros onde atuamos. Veja onde sua colaboração faz diferença agora.
+      </p>
+    </section>
+
+    <section class="lista-projetos container" aria-label="Lista de projetos">
+      <article class="projeto" aria-labelledby="projeto-hortas">
+        <h2 id="projeto-hortas">Hortas comunitárias</h2>
+        <p>
+          Ocupamos terrenos públicos ociosos e os transformamos em hortas coletivas de
+          hortaliças, ervas e frutas, plantadas e colhidas pelos próprios moradores.
+        </p>
+        <dl class="projeto__meta">
+          <div><dt>Frequência</dt><dd>Encontros semanais, terças e sábados</dd></div>
+          <div><dt>Onde</dt><dd>Vila Madalena, Butantã e Pirituba</dd></div>
+          <div><dt>Participação</dt><dd>Não exige experiência prévia</dd></div>
+        </dl>
+      </article>
+
+      <article class="projeto" aria-labelledby="projeto-mutiroes">
+        <h2 id="projeto-mutiroes">Mutirões de plantio</h2>
+        <p>
+          Ações pontuais de um único dia para preparar canteiros, plantar mudas de
+          árvores nativas e reformar a infraestrutura das hortas existentes.
+        </p>
+        <dl class="projeto__meta">
+          <div><dt>Frequência</dt><dd>Um sábado por mês</dd></div>
+          <div><dt>Onde</dt><dd>Rotativo entre as hortas parceiras</dd></div>
+          <div><dt>Participação</dt><dd>Ideal para grupos e famílias</dd></div>
+        </dl>
+      </article>
+
+      <article class="projeto" aria-labelledby="projeto-capacitacao">
+        <h2 id="projeto-capacitacao">Capacitação em agroecologia</h2>
+        <p>
+          Curso gratuito de oito semanas sobre manejo de solo, compostagem e cultivo
+          orgânico, voltado a moradores interessados em geração de renda com a terra.
+        </p>
+        <dl class="projeto__meta">
+          <div><dt>Frequência</dt><dd>Turmas trimestrais, aulas às quintas</dd></div>
+          <div><dt>Onde</dt><dd>Centro comunitário da Vila Madalena</dd></div>
+          <div><dt>Participação</dt><dd>Inscrição prévia e vagas limitadas</dd></div>
+        </dl>
+      </article>
+
+      <article class="projeto" aria-labelledby="projeto-banco">
+        <h2 id="projeto-banco">Banco de alimentos</h2>
+        <p>
+          Parte da colheita das hortas e doações de mercados parceiros são triadas e
+          distribuídas semanalmente a famílias em situação de insegurança alimentar.
+        </p>
+        <dl class="projeto__meta">
+          <div><dt>Frequência</dt><dd>Triagem às quartas, entrega às sextas</dd></div>
+          <div><dt>Onde</dt><dd>Sede da associação</dd></div>
+          <div><dt>Participação</dt><dd>Voluntários para logística e transporte</dd></div>
+        </dl>
+      </article>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="container rodape__grade">
+      <div>
+        <p class="marca--rodape">Raízes Urbanas</p>
+        <p>Associação civil sem fins lucrativos — CNPJ 00.000.000/0001-00</p>
+      </div>
+      <nav aria-label="Links do rodapé">
+        <ul>
+          <li><a href="index.html">Início</a></li>
+          <li><a href="projetos.html">Projetos</a></li>
+          <li><a href="cadastro.html">Cadastro</a></li>
+        </ul>
+      </nav>
+      <address>
+        Rua das Acácias, 240 — Vila Madalena, São Paulo/SP<br />
+        <a href="mailto:contato@raizesurbanas.org.br">contato@raizesurbanas.org.br</a>
+      </address>
+    </div>
+    <div class="container">
+      <p class="rodape__creditos">© 2026 Raízes Urbanas. Protótipo para fins de demonstração.</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js" defer></script>
+</body>
+</html>

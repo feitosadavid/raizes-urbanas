@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cadastro de voluntários — Raízes Urbanas</title>
+  <meta
+    name="description"
+    content="Cadastre-se como voluntário da Raízes Urbanas. Formulário com validação de CPF, telefone, CEP e preenchimento automático de endereço."
+  />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600&family=Work+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <a class="pular-conteudo" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="cabecalho">
+    <div class="container cabecalho__linha">
+      <a href="index.html" class="marca">
+        <svg viewBox="0 0 48 48" aria-hidden="true">
+          <path
+            fill="#1b3b2f"
+            d="M24 4c8 6 14 14 14 22a14 14 0 0 1-28 0c0-8 6-16 14-22Z"
+          />
+        </svg>
+        Raízes Urbanas
+      </a>
+      <button class="menu-alternar" aria-expanded="false" aria-controls="nav-principal">
+        Menu
+      </button>
+      <nav id="nav-principal" class="nav-principal" aria-label="Navegação principal">
+        <ul>
+          <li><a href="index.html">Início</a></li>
+          <li><a href="projetos.html">Projetos</a></li>
+          <li><a href="cadastro.html" class="nav-cta" aria-current="page">Quero ajudar</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo">
+    <section class="form-intro container">
+      <h1>Cadastro de voluntários</h1>
+      <p>
+        Preencha os dados abaixo para entrar na nossa lista de colaboradores. Os campos
+        com <strong>*</strong> são obrigatórios. Seu CPF é usado apenas para emitir o
+        certificado de horas voluntárias.
+      </p>
+    </section>
+
+    <div id="painel-sucesso" class="painel-sucesso container" hidden tabindex="-1">
+      <h2>Cadastro recebido, <span id="nome-confirmado"></span>!</h2>
+      <p>
+        Seu protocolo é <strong id="protocolo-gerado"></strong>. Guarde este número: em
+        breve nossa equipe de voluntariado entra em contato pelo e-mail informado com os
+        próximos passos.
+      </p>
+      <a href="index.html" class="botao botao--primario">Voltar ao início</a>
+    </div>
+
+    <form id="form-cadastro" class="formulario container" novalidate>
+      <fieldset>
+        <legend>Dados pessoais</legend>
+        <div class="grade-campos">
+          <div class="campo">
+            <label for="nome">Nome completo *</label>
+            <input
+              type="text"
+              id="nome"
+              name="nome"
+              required
+              minlength="3"
+              maxlength="120"
+              autocomplete="name"
+            />
+            <small class="erro" role="alert"></small>
+          </div>
+
+          <div class="campo">
+            <label for="email">E-mail *</label>
+            <input type="email" id="email" name="email" required autocomplete="email" />
+            <small class="erro" role="alert"></small>
+          </div>
+
+          <div class="campo">
+            <label for="cpf">CPF *</label>
+            <input
+              type="text"
+              id="cpf"
+              name="cpf"
+              required
+              inputmode="numeric"
+              placeholder="000.000.000-00"
+              maxlength="14"
+              pattern="\d{3}\.\d{3}\.\d{3}-\d{2}"
+              autocomplete="off"
+            />
+            <small class="dica">Usado apenas para o certificado de horas.</small>
+            <small class="erro" role="alert"></small>
+          </div>
+
+          <div class="campo">
+            <label for="telefone">Telefone *</label>
+            <input
+              type="tel"
+              id="telefone"
+              name="telefone"
+              required
+              inputmode="numeric"
+              placeholder="(00) 00000-0000"
+              maxlength="15"
+              pattern="\(\d{2}\) \d{4,5}-\d{4}"
+              autocomplete="tel"
+            />
+            <small class="erro" role="alert"></small>
+          </div>
+
+          <div class="campo">
+            <label for="nascimento">Data de nascimento *</label>
+            <input type="date" id="nascimento" name="nascimento" required />
+            <small class="dica">É preciso ter 16 anos ou mais.</small>
+            <small class="erro" role="alert"></small>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Endereço</legend>
+        <div class="grade-campos grade-campos--endereco">
+          <div class="campo">
+            <label for="cep">CEP *</label>
+            <input
+              type="text"
+              id="cep"
+              name="cep"
+              required
+              inputmode="numeric"
+              placeholder="00000-000"
+              maxlength="9"
+              pattern="\d{5}-\d{3}"
+              autocomplete="postal-code"
+            />
+          </div>
+          <div class="campo campo--largo">
+            <small class="erro" id="erro-cep" role="status" aria-live="polite"></small>
+          </div>
+
+          <div class="campo campo--largo">
+            <label for="logradouro">Logradouro *</label>
+            <input type="text" id="logradouro" name="logradouro" required maxlength="150" />
+            <small class="erro" role="alert"></small>
+          </div>
+
+          <div class="campo">
+            <label for="numero">Número *</label>
+            <input type="text" id="numero" name="numero" required maxlength="10" />
+            <small class="erro" role="alert"></small>
+          </div>
+
+          <div class="campo campo--largo">
+            <label for="complemento">Complemento <span class="opcional">(opcional)</span></label>
+            <input type="text" id="complemento" name="complemento" maxlength="60" />
+          </div>
+
+          <div class="campo campo--largo">
+            <label for="bairro">Bairro *</label>
+            <input type="text" id="bairro" name="bairro" required maxlength="100" />
+            <small class="erro" role="alert"></small>
+          </div>
+
+          <div class="campo">
+            <label for="cidade">Cidade *</label>
+            <input type="text" id="cidade" name="cidade" required maxlength="100" />
+            <small class="erro" role="alert"></small>
+          </div>
+
+          <div class="campo">
+            <label for="uf">UF *</label>
+            <input
+              type="text"
+              id="uf"
+              name="uf"
+              required
+              maxlength="2"
+              pattern="[A-Za-z]{2}"
+              style="text-transform: uppercase"
+            />
+            <small class="erro" role="alert"></small>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Como você quer ajudar</legend>
+
+        <div class="campo" style="margin-bottom: 1.2rem">
+          <span id="rotulo-interesses" style="font-weight: 600; font-size: 0.92rem">
+            Áreas de interesse * <span class="opcional">(marque uma ou mais)</span>
+          </span>
+          <div class="grupo-opcoes grupo-opcoes--linha" role="group" aria-labelledby="rotulo-interesses">
+            <label class="campo campo--checkbox" for="interesse-horta">
+              <input type="checkbox" id="interesse-horta" name="interesse" value="Hortas comunitárias" />
+              Hortas comunitárias
+            </label>
+            <label class="campo campo--checkbox" for="interesse-capacitacao">
+              <input type="checkbox" id="interesse-capacitacao" name="interesse" value="Capacitação" />
+              Capacitação
+            </label>
+            <label class="campo campo--checkbox" for="interesse-logistica">
+              <input type="checkbox" id="interesse-logistica" name="interesse" value="Logística e transporte" />
+              Logística e transporte
+            </label>
+            <label class="campo campo--checkbox" for="interesse-comunicacao">
+              <input type="checkbox" id="interesse-comunicacao" name="interesse" value="Comunicação" />
+              Comunicação
+            </label>
+          </div>
+          <small class="erro" id="erro-interesses" role="alert"></small>
+        </div>
+
+        <div class="campo">
+          <span id="rotulo-disponibilidade" style="font-weight: 600; font-size: 0.92rem">
+            Disponibilidade *
+          </span>
+          <div class="grupo-opcoes grupo-opcoes--linha" role="radiogroup" aria-labelledby="rotulo-disponibilidade">
+            <label class="campo campo--radio" for="disponibilidade-manha">
+              <input type="radio" id="disponibilidade-manha" name="disponibilidade" value="Manhã" />
+              Manhã
+            </label>
+            <label class="campo campo--radio" for="disponibilidade-tarde">
+              <input type="radio" id="disponibilidade-tarde" name="disponibilidade" value="Tarde" />
+              Tarde
+            </label>
+            <label class="campo campo--radio" for="disponibilidade-noite">
+              <input type="radio" id="disponibilidade-noite" name="disponibilidade" value="Noite" />
+              Noite
+            </label>
+            <label class="campo campo--radio" for="disponibilidade-fds">
+              <input type="radio" id="disponibilidade-fds" name="disponibilidade" value="Fins de semana" />
+              Fins de semana
+            </label>
+          </div>
+          <small class="erro" id="erro-disponibilidade" role="alert"></small>
+        </div>
+
+        <div class="campo" style="margin-top: 1.2rem">
+          <label for="mensagem">Conte um pouco sobre você <span class="opcional">(opcional)</span></label>
+          <textarea id="mensagem" name="mensagem" maxlength="500"></textarea>
+          <span class="contador-caracteres" id="contador-mensagem">500 caracteres restantes</span>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Confirmação</legend>
+        <div class="termo-caixa campo campo--checkbox">
+          <input type="checkbox" id="termo" name="termo" required />
+          <label for="termo">
+            Li e concordo com o termo de voluntariado da Raízes Urbanas, e autorizo o uso
+            dos meus dados para fins de organização das atividades. *
+          </label>
+        </div>
+        <small class="erro" role="alert"></small>
+      </fieldset>
+
+      <div id="resumo-erros" class="resumo-erros" role="alert" tabindex="-1" hidden>
+        <strong>Antes de enviar, corrija os itens abaixo:</strong>
+        <ul id="lista-resumo-erros"></ul>
+      </div>
+
+      <div class="acoes-formulario">
+        <button type="submit" class="botao botao--primario">Enviar cadastro</button>
+        <span style="font-size: 0.85rem; color: var(--tinta-suave)">
+          Nenhum dado é compartilhado com terceiros.
+        </span>
+      </div>
+    </form>
+  </main>
+
+  <footer class="rodape">
+    <div class="container rodape__grade">
+      <div>
+        <p class="marca--rodape">Raízes Urbanas</p>
+        <p>Associação civil sem fins lucrativos — CNPJ 00.000.000/0001-00</p>
+      </div>
+      <nav aria-label="Links do rodapé">
+        <ul>
+          <li><a href="index.html">Início</a></li>
+          <li><a href="projetos.html">Projetos</a></li>
+          <li><a href="cadastro.html">Cadastro</a></li>
+        </ul>
+      </nav>
+      <address>
+        Rua das Acácias, 240 — Vila Madalena, São Paulo/SP<br />
+        <a href="mailto:contato@raizesurbanas.org.br">contato@raizesurbanas.org.br</a>
+      </address>
+    </div>
+    <div class="container">
+      <p class="rodape__creditos">© 2026 Raízes Urbanas. Protótipo para fins de demonstração.</p>
+    </div>
+  </footer>
+
+  <script src="js/mascaras.js" defer></script>
+  <script src="js/validacao.js" defer></script>
+  <script src="js/main.js" defer></script>
+</body>
+</html>
