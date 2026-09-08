@@ -50,6 +50,18 @@ function mascararCEP(valor) {
   return saida;
 }
 
+/** Aplica a máscara brasileira de data 00/00/0000, limitando a 8 dígitos. */
+function mascararData(valor) {
+  const d = somenteDigitos(valor).slice(0, 8);
+  let saida = d;
+  if (d.length > 4) {
+    saida = `${d.slice(0, 2)}/${d.slice(2, 4)}/${d.slice(4)}`;
+  } else if (d.length > 2) {
+    saida = `${d.slice(0, 2)}/${d.slice(2)}`;
+  }
+  return saida;
+}
+
 /**
  * Liga uma função de máscara a um campo: reaplica o formato a cada
  * digitação e preserva a posição do cursor de forma simples (fim do valor),

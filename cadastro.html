@@ -122,8 +122,18 @@
 
           <div class="campo">
             <label for="nascimento">Data de nascimento *</label>
-            <input type="date" id="nascimento" name="nascimento" required />
-            <small class="dica">É preciso ter 16 anos ou mais.</small>
+            <input
+              type="text"
+              id="nascimento"
+              name="nascimento"
+              required
+              inputmode="numeric"
+              placeholder="dd/mm/aaaa"
+              maxlength="10"
+              pattern="\d{2}/\d{2}/\d{4}"
+              autocomplete="bday"
+            />
+            <small class="dica">Formato brasileiro: dia/mês/ano. É preciso ter 16 anos ou mais.</small>
             <small class="erro" role="alert"></small>
           </div>
         </div>

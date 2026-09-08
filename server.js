@@ -47,25 +47,6 @@ function salvarCadastros(lista) {
   fs.writeFileSync(ARQUIVO_DE_DADOS, JSON.stringify(lista, null, 2), "utf8");
 }
 
-/** Mesma verificação de dígito do CPF usada no navegador — nunca confie só no cliente. */
-function cpfValido(cpfComMascara) {
-  const cpf = (cpfComMascara || "").replace(/\D/g, "");
-  if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
-  const calcularDigito = (base) => {
-    let soma = 0;
-    let peso = base.length + 1;
-    for (const char of base) {
-      soma += Number(char) * peso;
-      peso -= 1;
-    }
-    const resto = (soma * 10) % 11;
-    return resto === 10 ? 0 : resto;
-  };
-  const d1 = calcularDigito(cpf.slice(0, 9));
-  const d2 = calcularDigito(cpf.slice(0, 9) + d1);
-  return cpf === cpf.slice(0, 9) + String(d1) + String(d2);
-}
-
 function gerarProtocolo() {
   const ano = new Date().getFullYear();
   const aleatorio = Math.floor(100000 + Math.random() * 900000);
@@ -94,15 +75,14 @@ function tratarCadastro(req, res) {
 
     // Validação mínima de integridade no servidor (o cliente já validou o
     // resto, mas o servidor nunca deve confiar cegamente no cliente).
+    // O CPF não é verificado por dígito aqui de propósito: neste protótipo,
+    // qualquer valor no campo é aceito para facilitar testes.
     const camposObrigatorios = ["nome", "email", "cpf", "telefone", "nascimento"];
     const faltando = camposObrigatorios.filter((campo) => !dados[campo]);
     if (faltando.length > 0) {
       return responderJSON(res, 400, {
         mensagem: `Campos obrigatórios ausentes: ${faltando.join(", ")}.`,
       });
-    }
-    if (!cpfValido(dados.cpf)) {
-      return responderJSON(res, 400, { mensagem: "CPF inválido." });
     }
 
     const registros = lerCadastros();

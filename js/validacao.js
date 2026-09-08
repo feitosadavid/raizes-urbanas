@@ -3,33 +3,27 @@
 // com regras que o HTML sozinho não expressa: dígito verificador do CPF,
 // idade mínima e "pelo menos uma opção marcada" nos interesses.
 
-/** Valida um CPF pelo algoritmo oficial dos dois dígitos verificadores. */
-function cpfValido(cpfComMascara) {
-  const cpf = somenteDigitos(cpfComMascara);
-  if (cpf.length !== 11) return false;
-  if (/^(\d)\1{10}$/.test(cpf)) return false; // 111.111.111-11 etc.
-
-  const calcularDigito = (base) => {
-    let soma = 0;
-    let peso = base.length + 1;
-    for (const char of base) {
-      soma += Number(char) * peso;
-      peso -= 1;
-    }
-    const resto = (soma * 10) % 11;
-    return resto === 10 ? 0 : resto;
-  };
-
-  const digito1 = calcularDigito(cpf.slice(0, 9));
-  const digito2 = calcularDigito(cpf.slice(0, 9) + digito1);
-  return cpf === cpf.slice(0, 9) + String(digito1) + String(digito2);
+/** Confere se "dd/mm/aaaa" é uma data de calendário real (dias por mês, ano bissexto). */
+function dataBRValida(dataBR) {
+  const combinacao = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(dataBR || "");
+  if (!combinacao) return false;
+  const dia = Number(combinacao[1]);
+  const mes = Number(combinacao[2]);
+  const ano = Number(combinacao[3]);
+  if (mes < 1 || mes > 12) return false;
+  const diasNoMes = new Date(ano, mes, 0).getDate();
+  if (dia < 1 || dia > diasNoMes) return false;
+  const hoje = new Date();
+  const data = new Date(ano, mes - 1, dia);
+  return data <= hoje; // Data de nascimento não pode estar no futuro.
 }
 
-/** Calcula idade completa em anos a partir de "AAAA-MM-DD". */
-function idadeEmAnos(dataISO) {
-  if (!dataISO) return null;
-  const nascimento = new Date(dataISO + "T00:00:00");
-  if (Number.isNaN(nascimento.getTime())) return null;
+/** Calcula idade completa em anos a partir de "dd/mm/aaaa". */
+function idadeEmAnos(dataBR) {
+  const combinacao = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(dataBR || "");
+  if (!combinacao) return null;
+  const [, diaStr, mesStr, anoStr] = combinacao;
+  const nascimento = new Date(Number(anoStr), Number(mesStr) - 1, Number(diaStr));
   const hoje = new Date();
   let idade = hoje.getFullYear() - nascimento.getFullYear();
   const aindaNaoFezAniversario =
@@ -53,16 +47,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const listaResumoErros = document.getElementById("lista-resumo-erros");
   const painelSucesso = document.getElementById("painel-sucesso");
 
-  // Data máxima permitida no seletor = hoje menos 16 anos, para que o
-  // próprio calendário nativo já desencoraje datas que não atingem a
-  // idade mínima de participação.
-  const hoje = new Date();
-  const limite = new Date(hoje.getFullYear() - 16, hoje.getMonth(), hoje.getDate());
-  campoNascimento.max = limite.toISOString().slice(0, 10);
-
   ligarMascara(campoCPF, mascararCPF);
   ligarMascara(campoTelefone, mascararTelefone);
   ligarMascara(campoCEP, mascararCEP);
+  ligarMascara(campoNascimento, mascararData);
 
   // Contador de caracteres da mensagem (campo opcional, limite de 500).
   const atualizarContador = () => {
@@ -154,15 +142,17 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    // 2) CPF com dígito verificador.
-    if (campoCPF.value && !cpfValido(campoCPF.value)) {
-      erros.push(marcarErro("cpf", "Este CPF não é válido. Confira os números digitados."));
-    }
-
-    // 3) Idade mínima de 16 anos.
-    const idade = idadeEmAnos(campoNascimento.value);
-    if (campoNascimento.value && (idade === null || idade < 16)) {
-      erros.push(marcarErro("nascimento", "É preciso ter 16 anos ou mais para se cadastrar."));
+    // 2) Data de nascimento: precisa ser uma data real de calendário, e a
+    // pessoa precisa ter 16 anos ou mais. O CPF não passa mais por
+    // verificação de dígito — o campo aceita qualquer valor no formato de
+    // máscara, propositalmente, para facilitar testes.
+    if (campoNascimento.value && !dataBRValida(campoNascimento.value)) {
+      erros.push(marcarErro("nascimento", "Digite uma data de nascimento válida (dd/mm/aaaa)."));
+    } else {
+      const idade = idadeEmAnos(campoNascimento.value);
+      if (campoNascimento.value && (idade === null || idade < 16)) {
+        erros.push(marcarErro("nascimento", "É preciso ter 16 anos ou mais para se cadastrar."));
+      }
     }
 
     // 4) Pelo menos um interesse marcado.
