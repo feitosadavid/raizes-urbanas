@@ -119,6 +119,8 @@ npm test
 ```
 
 O projeto usa o test runner nativo do Node.js e não exige dependências de runtime.
+Os testes também verificam a estrutura acessível básica das páginas, incluindo
+`lang`, `title`, `main`, skip link, ausência de estilos inline e labels de campos.
 Em Windows com a política do PowerShell restrita, use `npm.cmd run check` e
 `npm.cmd test`. As variáveis opcionais estão em `.env.example`: `PORT`, `HOST`
 e `ADMIN_TOKEN`.
@@ -154,7 +156,8 @@ clara, sem travar o formulário.
 
 As regras essenciais são repetidas no servidor: formato, limites, idade, endereço,
 interesses, disponibilidade e aceite do termo. O servidor também limita o corpo
-JSON, restringe os arquivos públicos e envia headers básicos de segurança e cache.
+JSON, restringe os arquivos públicos, envia headers básicos de segurança e cache,
+comprime assets compatíveis com gzip e suporta `ETag`/respostas `304`.
 
 ## ♿ Acessibilidade
 
@@ -174,11 +177,24 @@ contraste e leitor de tela, além de uma ferramenta como Lighthouse, axe ou WAVE
 
 ## 🔀 Fluxo Git e colaboração
 
-1. Crie uma branch descritiva a partir de `main`, como `feat/formulario-acessivel`.
+O repositório segue GitFlow com estas branches:
+
+- `main`: representa apenas versões de lançamento estáveis e deve receber alterações por pull request.
+- `develop`: branch permanente de integração do desenvolvimento contínuo; recebe funcionalidades concluídas e prepara a próxima versão.
+- `feature/<nome>`: branch temporária criada a partir de `develop` para uma funcionalidade ou melhoria isolada. O trabalho atual está em `feature/production-accessibility`.
+- `hotfix/<nome>`: branch temporária criada a partir de `main` para corrigir falhas urgentes em produção. Depois da correção, deve ser integrada em `main` e também em `develop`.
+- `release/<versão>`: branch opcional criada a partir de `develop` para congelar uma versão, executar testes finais e preparar o lançamento em `main`.
+
+O fluxo normal é `feature/*` → `develop` → `release/*` → `main`. Um lançamento
+deve ser marcado com uma tag, como `v1.0.0`, e sincronizado novamente em `develop`.
+Correções urgentes seguem `hotfix/*` → `main` e depois `hotfix/*` → `develop`.
+
+1. Crie uma branch descritiva a partir de `develop`.
 2. Faça commits pequenos e objetivos usando verbos no presente.
-3. Abra um pull request com descrição, evidências de teste e impacto de acessibilidade.
-4. Aguarde a execução do GitHub Actions e pelo menos uma revisão antes do merge.
-5. Faça merge somente com CI verde e mantenha a branch atualizada.
+3. Abra um pull request da `feature/*` para `develop` com testes e impacto de acessibilidade.
+4. Aguarde o GitHub Actions e pelo menos uma revisão antes do merge.
+5. Crie `release/*` quando o conjunto de funcionalidades estiver pronto para validação final.
+6. Faça merge em `main`, crie a tag e sincronize a versão em `develop`.
 
 O workflow em `.github/workflows/ci.yml` executa checagem de sintaxe e testes em
 pushes para `main` e em pull requests.

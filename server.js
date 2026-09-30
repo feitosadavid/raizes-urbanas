@@ -4,6 +4,7 @@ const crypto = require("crypto");
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
+const zlib = require("zlib");
 
 const PORTA = Number(process.env.PORT || 3000);
 const HOST = process.env.HOST || "0.0.0.0";
@@ -213,6 +214,13 @@ function responderJSON(res, status, corpo) {
 }
 
 function tratarCadastro(req, res) {
+  const contentType = req.headers["content-type"] || "";
+  if (!contentType.toLowerCase().startsWith("application/json")) {
+    return responderJSON(res, 415, {
+      mensagem: "O Content-Type deve ser application/json.",
+    });
+  }
+
   let corpoBruto = "";
   let excedeuLimite = false;
   req.on("data", (pedaco) => {
@@ -274,11 +282,31 @@ function tratarArquivoEstatico(req, res, url) {
       res.writeHead(404, cabecalhosSeguros("text/plain; charset=utf-8"));
       return res.end("Página não encontrada.");
     }
-    res.writeHead(
-      200,
-      cabecalhosSeguros(TIPOS_MIME[extensao], extensao !== ".html"),
+    const etag = `"${crypto.createHash("sha256").update(conteudo).digest("hex")}"`;
+    const headers = cabecalhosSeguros(
+      TIPOS_MIME[extensao],
+      extensao !== ".html",
     );
-    res.end(conteudo);
+    headers.ETag = etag;
+    if (req.headers["if-none-match"] === etag) {
+      res.writeHead(304, headers);
+      return res.end();
+    }
+
+    const podeComprimir =
+      /^(text\/|application\/javascript|image\/svg\+xml)/.test(
+        TIPOS_MIME[extensao],
+      );
+    const aceitaGzip = /\bgzip\b/.test(req.headers["accept-encoding"] || "");
+    const corpo =
+      podeComprimir && aceitaGzip ? zlib.gzipSync(conteudo) : conteudo;
+    if (corpo !== conteudo) {
+      headers["Content-Encoding"] = "gzip";
+      headers.Vary = "Accept-Encoding";
+    }
+    headers["Content-Length"] = corpo.length;
+    res.writeHead(200, headers);
+    res.end(corpo);
   });
 }
 
