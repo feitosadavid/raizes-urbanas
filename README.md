@@ -38,15 +38,15 @@ com um pequeno backend em Node.js para persistência real dos dados.
 
 ## 🧱 Stack tecnológica
 
-| Camada       | Tecnologia                                   |
-|--------------|-----------------------------------------------|
-| Marcação     | HTML5 semântico                                |
-| Estilo       | CSS3 (Grid, Flexbox, variáveis CSS, media queries) |
-| Interatividade | JavaScript (Vanilla JS, sem frameworks)      |
-| Servidor     | Node.js (módulos nativos, sem `npm install`)  |
-| Persistência | Arquivo JSON (`data/cadastros.json`)          |
-| Tipografia   | Google Fonts — Fraunces (títulos) + Work Sans (texto) |
-| API externa  | ViaCEP (consulta pública de endereço por CEP) |
+| Camada         | Tecnologia                                            |
+| -------------- | ----------------------------------------------------- |
+| Marcação       | HTML5 semântico                                       |
+| Estilo         | CSS3 (Grid, Flexbox, variáveis CSS, media queries)    |
+| Interatividade | JavaScript (Vanilla JS, sem frameworks)               |
+| Servidor       | Node.js (módulos nativos, sem `npm install`)          |
+| Persistência   | Arquivo JSON (`data/cadastros.json`)                  |
+| Tipografia     | Google Fonts — Fraunces (títulos) + Work Sans (texto) |
+| API externa    | ViaCEP (consulta pública de endereço por CEP)         |
 
 ---
 
@@ -59,6 +59,9 @@ raizes-urbanas/
 ├── cadastro.html         # Formulário de cadastro de voluntários
 ├── spa-demo.html          # Prova de conceito de SPA (rotas por hash)
 ├── server.js               # Servidor Node — arquivos estáticos + API de cadastro
+├── package.json             # Scripts de inicialização, checagem e testes
+├── render.yaml              # Configuração de deploy no Render
+├── .github/workflows/ci.yml # CI em push e pull request
 ├── css/
 │   └── style.css             # Estilos, tokens de design, grid e breakpoints
 ├── js/
@@ -82,8 +85,19 @@ LTS recente).
 # 1. Entre na pasta do projeto
 cd raizes-urbanas
 
-# 2. Rode o servidor
-node server.js
+# 2. Instale as dependências (o projeto usa apenas módulos nativos)
+npm install
+
+# 3. Rode o servidor
+npm start
+```
+
+No Windows, se o PowerShell bloquear `npm.ps1` por causa da política de
+execução, use os comandos equivalentes abaixo:
+
+```powershell
+npm.cmd install
+npm.cmd start
 ```
 
 Você verá no terminal:
@@ -94,37 +108,80 @@ Cadastros salvos em: .../raizes-urbanas/data/cadastros.json
 ```
 
 Abra **http://localhost:3000** no navegador. Não abra os arquivos `.html`
-diretamente (`file://`) nem use extensões como *Live Server* — o formulário
+diretamente (`file://`) nem use extensões como _Live Server_ — o formulário
 depende do backend Node para funcionar corretamente.
+
+### Verificação local
+
+```bash
+npm run check
+npm test
+```
+
+O projeto usa o test runner nativo do Node.js e não exige dependências de runtime.
+Em Windows com a política do PowerShell restrita, use `npm.cmd run check` e
+`npm.cmd test`. As variáveis opcionais estão em `.env.example`: `PORT`, `HOST`
+e `ADMIN_TOKEN`.
 
 ---
 
 ## 🔌 Rotas do servidor
 
-| Método | Rota              | Descrição                                                        |
-|--------|-------------------|--------------------------------------------------------------------|
-| GET    | `/`, `/*.html`, `/css/*`, `/js/*` | Arquivos estáticos do site                            |
-| POST   | `/api/cadastro`   | Recebe um cadastro em JSON, valida campos obrigatórios e grava em `data/cadastros.json` |
-| GET    | `/api/cadastros`  | Lista todos os cadastros salvos (sem autenticação — apenas para inspeção no protótipo) |
+| Método | Rota                              | Descrição                                                                               |
+| ------ | --------------------------------- | --------------------------------------------------------------------------------------- |
+| GET    | `/`, `/*.html`, `/css/*`, `/js/*` | Arquivos estáticos do site                                                              |
+| POST   | `/api/cadastro`                   | Recebe um cadastro em JSON, valida campos obrigatórios e grava em `data/cadastros.json` |
+| GET    | `/api/cadastros`                  | Lista cadastros somente com o header `x-admin-token` correspondente a `ADMIN_TOKEN`     |
 
 ---
 
 ## ✅ Validações do formulário
 
-| Campo             | Regra aplicada                                                                 |
-|-------------------|----------------------------------------------------------------------------------|
-| Nome              | Obrigatório, mínimo 3 caracteres                                                  |
-| E-mail            | Obrigatório, formato de e-mail válido (`type="email"`)                            |
-| CPF               | Obrigatório, precisa seguir o formato `000.000.000-00` — **sem** verificação de dígito, propositalmente, para facilitar testes com dados fictícios |
-| Telefone          | Obrigatório, formato `(00) 0000-0000` ou `(00) 00000-0000`                         |
-| Data de nascimento | Obrigatória, precisa ser uma data real de calendário (considera anos bissextos) e a pessoa precisa ter **16 anos ou mais** |
-| CEP               | Obrigatório, formato `00000-000`; busca automática de endereço via ViaCEP (se o CEP não existir, não bloqueia — a pessoa preenche manualmente) |
-| Interesses        | Pelo menos uma área marcada                                                        |
-| Disponibilidade   | Obrigatório selecionar um período                                                  |
-| Termo de aceite   | Checkbox obrigatório                                                               |
+| Campo              | Regra aplicada                                                                                                                                     |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Nome               | Obrigatório, mínimo 3 caracteres                                                                                                                   |
+| E-mail             | Obrigatório, formato de e-mail válido (`type="email"`)                                                                                             |
+| CPF                | Obrigatório, precisa seguir o formato `000.000.000-00` — **sem** verificação de dígito, propositalmente, para facilitar testes com dados fictícios |
+| Telefone           | Obrigatório, formato `(00) 0000-0000` ou `(00) 00000-0000`                                                                                         |
+| Data de nascimento | Obrigatória, precisa ser uma data real de calendário (considera anos bissextos) e a pessoa precisa ter **16 anos ou mais**                         |
+| CEP                | Obrigatório, formato `00000-000`; busca automática de endereço via ViaCEP (se o CEP não existir, não bloqueia — a pessoa preenche manualmente)     |
+| Interesses         | Pelo menos uma área marcada                                                                                                                        |
+| Disponibilidade    | Obrigatório selecionar um período                                                                                                                  |
+| Termo de aceite    | Checkbox obrigatório                                                                                                                               |
 
 Falhas de rede (ex.: servidor Node fora do ar) são tratadas com uma mensagem
 clara, sem travar o formulário.
+
+As regras essenciais são repetidas no servidor: formato, limites, idade, endereço,
+interesses, disponibilidade e aceite do termo. O servidor também limita o corpo
+JSON, restringe os arquivos públicos e envia headers básicos de segurança e cache.
+
+## ♿ Acessibilidade
+
+O projeto segue uma verificação prática baseada nas áreas relevantes da WCAG 2.1:
+
+- HTML semântico, landmarks, headings e `lang="pt-BR"`;
+- link para saltar ao conteúdo principal;
+- labels associados aos campos e mensagens por `aria-describedby`;
+- `aria-invalid` atualizado durante a validação;
+- resumo de erros focável e painel de sucesso anunciado por `aria-live`;
+- navegação por teclado com indicador de foco visível;
+- menu responsivo com `aria-expanded`;
+- suporte a `prefers-reduced-motion`.
+
+A conformidade formal ainda depende de auditoria manual com teclado, zoom de 200%,
+contraste e leitor de tela, além de uma ferramenta como Lighthouse, axe ou WAVE.
+
+## 🔀 Fluxo Git e colaboração
+
+1. Crie uma branch descritiva a partir de `main`, como `feat/formulario-acessivel`.
+2. Faça commits pequenos e objetivos usando verbos no presente.
+3. Abra um pull request com descrição, evidências de teste e impacto de acessibilidade.
+4. Aguarde a execução do GitHub Actions e pelo menos uma revisão antes do merge.
+5. Faça merge somente com CI verde e mantenha a branch atualizada.
+
+O workflow em `.github/workflows/ci.yml` executa checagem de sintaxe e testes em
+pushes para `main` e em pull requests.
 
 ---
 
@@ -197,23 +254,30 @@ com sucesso, o rascunho é apagado automaticamente.
 
 ---
 
-## ⚠️ Limitações conhecidas
+## 🚀 Deploy
+
+O arquivo `render.yaml` prepara um Web Service no Render:
+
+1. Crie um serviço a partir do repositório GitHub.
+2. Use o blueprint `render.yaml` ou configure `npm install` como build e `npm start` como start.
+3. Defina `ADMIN_TOKEN` como segredo no painel do provedor.
+4. Verifique a rota `/` e o fluxo completo do formulário após o deploy.
+
+O deploy real depende de uma conta e credenciais do provedor; elas não ficam
+armazenadas no repositório.
+
+## 🛠️ Manutenção e limitações conhecidas
 
 - Persistência em arquivo JSON local — não é um banco de dados real; sob uso
   concorrente intenso pode haver condição de corrida na escrita.
-- Endpoint `/api/cadastros` não possui autenticação — serve apenas para
-  inspeção durante o desenvolvimento.
+- O endpoint `/api/cadastros` fica indisponível sem `ADMIN_TOKEN` e deve ser
+  substituído por uma solução administrativa autenticada em produção.
 - CPF armazenado em texto puro, sem verificação de dígito (aceita qualquer
   valor no formato correto).
-
-## 🔭 Próximos passos
-
-- Separar mais claramente a camada de validação da camada de chamadas de rede
-  em `validacao.js`.
-- Migrar os scripts para módulos ES6 (`import`/`export`).
-- Adicionar componentes de feedback visual (badges, toasts, modais).
-- Escrever testes automatizados para as funções de máscara e validação.
-- Substituir a persistência em JSON por um banco leve (ex.: SQLite).
+- Faça backup de `data/cadastros.json` antes de atualizações e não versionalize
+  dados reais de voluntários.
+- Para maior escala, migre a persistência para SQLite ou outro banco com controle
+  de concorrência, criptografia e política de retenção.
 
 ---
 

@@ -79,3 +79,13 @@ function ligarMascara(input, funcaoMascara) {
     }
   });
 }
+
+if (typeof module !== "undefined") {
+  module.exports = {
+    mascararCPF,
+    mascararTelefone,
+    mascararCEP,
+    mascararData,
+    somenteDigitos,
+  };
+}

@@ -1,7 +1,7 @@
 // Validação e envio do formulário de cadastro (cadastro.html).
 // Combina validação nativa do HTML5 (required, type, pattern, maxlength)
-// com regras que o HTML sozinho não expressa: dígito verificador do CPF,
-// idade mínima e "pelo menos uma opção marcada" nos interesses.
+// com regras que o HTML sozinho não expressa: idade mínima e "pelo menos
+// uma opção marcada" nos interesses.
 
 /** Confere se "dd/mm/aaaa" é uma data de calendário real (dias por mês, ano bissexto). */
 function dataBRValida(dataBR) {
@@ -23,12 +23,17 @@ function idadeEmAnos(dataBR) {
   const combinacao = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(dataBR || "");
   if (!combinacao) return null;
   const [, diaStr, mesStr, anoStr] = combinacao;
-  const nascimento = new Date(Number(anoStr), Number(mesStr) - 1, Number(diaStr));
+  const nascimento = new Date(
+    Number(anoStr),
+    Number(mesStr) - 1,
+    Number(diaStr),
+  );
   const hoje = new Date();
   let idade = hoje.getFullYear() - nascimento.getFullYear();
   const aindaNaoFezAniversario =
     hoje.getMonth() < nascimento.getMonth() ||
-    (hoje.getMonth() === nascimento.getMonth() && hoje.getDate() < nascimento.getDate());
+    (hoje.getMonth() === nascimento.getMonth() &&
+      hoje.getDate() < nascimento.getDate());
   if (aindaNaoFezAniversario) idade -= 1;
   return idade;
 }
@@ -85,7 +90,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (dados.erro) {
         // CEP fictício ou inexistente: sem problema, o teste continua —
         // a pessoa só preenche o endereço manualmente.
-        avisoCEP.textContent = "CEP não encontrado. Preencha o endereço manualmente.";
+        avisoCEP.textContent =
+          "CEP não encontrado. Preencha o endereço manualmente.";
         return;
       }
       campoLogradouro.value = dados.logradouro || campoLogradouro.value;
@@ -100,7 +106,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     } catch (falha) {
       // A consulta tem tempo limite e nunca bloqueia o preenchimento manual.
-      avisoCEP.textContent = "Não foi possível consultar o CEP. Preencha o endereço manualmente.";
+      avisoCEP.textContent =
+        "Não foi possível consultar o CEP. Preencha o endereço manualmente.";
     } finally {
       clearTimeout(temporizador);
     }
@@ -108,6 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function marcarErro(campoId, mensagem) {
     const input = document.getElementById(campoId);
+    if (!input) return null;
     const container = input.closest(".campo");
     const erroInterno = container?.querySelector("small.erro");
     const erroAdjacente = container?.nextElementSibling?.matches("small.erro")
@@ -115,6 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
       : null;
     const erro = erroInterno || erroAdjacente;
     container?.classList.add("campo--erro");
+    input.setAttribute("aria-invalid", String(Boolean(mensagem)));
     if (erro) erro.textContent = mensagem;
     return mensagem ? { campoId, mensagem } : null;
   }
@@ -126,8 +135,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function limparTodosErros() {
-    form.querySelectorAll(".campo--erro").forEach((c) => c.classList.remove("campo--erro"));
+    form
+      .querySelectorAll(".campo--erro")
+      .forEach((c) => c.classList.remove("campo--erro"));
     form.querySelectorAll("small.erro").forEach((e) => (e.textContent = ""));
+    form
+      .querySelectorAll("[aria-invalid]")
+      .forEach((campo) => campo.setAttribute("aria-invalid", "false"));
     const erroInteresses = document.getElementById("erro-interesses");
     const erroDisponibilidade = document.getElementById("erro-disponibilidade");
     if (erroInteresses) erroInteresses.textContent = "";
@@ -155,7 +169,9 @@ document.addEventListener("DOMContentLoaded", () => {
         // datas preenchidas, evitando duplicar o aviso nativo de formato.
         if (campo.id === "nascimento" && campoNascimento.value) return;
         const rotulo = form.querySelector(`label[for="${campo.id}"]`);
-        const nome = rotulo ? rotulo.textContent.replace("*", "").trim() : campo.id;
+        const nome = rotulo
+          ? rotulo.textContent.replace("*", "").trim()
+          : campo.id;
         erros.push(marcarErro(campo.id, `Verifique o campo “${nome}”.`));
       });
     }
@@ -165,28 +181,55 @@ document.addEventListener("DOMContentLoaded", () => {
     // verificação de dígito — o campo aceita qualquer valor no formato de
     // máscara, propositalmente, para facilitar testes.
     if (campoNascimento.value && !dataBRValida(campoNascimento.value)) {
-      erros.push(marcarErro("nascimento", "Digite uma data de nascimento válida (dd/mm/aaaa)."));
+      erros.push(
+        marcarErro(
+          "nascimento",
+          "Digite uma data de nascimento válida (dd/mm/aaaa).",
+        ),
+      );
     } else {
       const idade = idadeEmAnos(campoNascimento.value);
       if (campoNascimento.value && (idade === null || idade < 16)) {
-        erros.push(marcarErro("nascimento", "É preciso ter 16 anos ou mais para se cadastrar."));
+        erros.push(
+          marcarErro(
+            "nascimento",
+            "É preciso ter 16 anos ou mais para se cadastrar.",
+          ),
+        );
       }
     }
 
     // 4) Pelo menos um interesse marcado.
-    const interessesMarcados = form.querySelectorAll('input[name="interesse"]:checked');
+    const interessesMarcados = form.querySelectorAll(
+      'input[name="interesse"]:checked',
+    );
     const erroInteresses = document.getElementById("erro-interesses");
+    const primeiroInteresse = document.getElementById("interesse-horta");
     if (interessesMarcados.length === 0) {
       erroInteresses.textContent = "Marque pelo menos uma área de interesse.";
-      erros.push({ campoId: "interesse-horta", mensagem: erroInteresses.textContent });
+      primeiroInteresse.setAttribute("aria-invalid", "true");
+      erros.push({
+        campoId: "interesse-horta",
+        mensagem: erroInteresses.textContent,
+      });
     }
 
     // 5) Disponibilidade (grupo de rádio) selecionada.
-    const disponibilidadeMarcada = form.querySelector('input[name="disponibilidade"]:checked');
+    const disponibilidadeMarcada = form.querySelector(
+      'input[name="disponibilidade"]:checked',
+    );
     const erroDisponibilidade = document.getElementById("erro-disponibilidade");
+    const primeiraDisponibilidade = document.getElementById(
+      "disponibilidade-manha",
+    );
     if (!disponibilidadeMarcada) {
-      erroDisponibilidade.textContent = "Escolha um período de disponibilidade.";
-      erros.push({ campoId: "disponibilidade-manha", mensagem: erroDisponibilidade.textContent });
+      erroDisponibilidade.textContent =
+        "Escolha um período de disponibilidade.";
+      primeiraDisponibilidade.setAttribute("aria-invalid", "true");
+      erros.push({
+        campoId: "disponibilidade-manha",
+        mensagem: erroDisponibilidade.textContent,
+      });
     }
 
     const errosValidos = erros.filter(Boolean);
@@ -203,8 +246,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       resumoErros.hidden = false;
       resumoErros.focus();
-      const primeiroCampo = document.getElementById(errosValidos[0].campoId);
-      primeiroCampo?.focus();
       return;
     }
 
@@ -227,6 +268,7 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       interesses: Array.from(interessesMarcados).map((c) => c.value),
       disponibilidade: disponibilidadeMarcada.value,
+      termo: document.getElementById("termo").checked,
       mensagem: campoMensagem.value.trim(),
     };
 
@@ -250,6 +292,7 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("protocolo-gerado").textContent = protocolo;
       document.getElementById("nome-confirmado").textContent = registro.nome;
       painelSucesso.hidden = false;
+      painelSucesso.focus();
       form.hidden = true;
       document.querySelector(".form-intro")?.setAttribute("hidden", "");
       // Cadastro confirmado: o rascunho salvo em localStorage não faz mais

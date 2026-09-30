@@ -1,0 +1,15 @@
+{
+  "name": "raizes-urbanas",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Site institucional e cadastro de voluntários da Raízes Urbanas.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test",
+    "check": "node --check server.js && node --check js/main.js && node --check js/mascaras.js && node --check js/rascunho.js && node --check js/spa-router.js && node --check js/validacao.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
