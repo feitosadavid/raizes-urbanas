@@ -36,7 +36,15 @@
       <nav id="nav-principal" class="nav-principal" aria-label="Navegação principal">
         <ul>
           <li><a href="index.html">Início</a></li>
-          <li><a href="projetos.html">Projetos</a></li>
+          <li class="nav-item--submenu">
+            <a href="projetos.html">Projetos<span class="nav-seta" aria-hidden="true"></span></a>
+            <ul class="nav-submenu">
+              <li><a href="projetos.html#projeto-hortas">Hortas comunitárias</a></li>
+              <li><a href="projetos.html#projeto-mutiroes">Mutirões de plantio</a></li>
+              <li><a href="projetos.html#projeto-capacitacao">Capacitação em agroecologia</a></li>
+              <li><a href="projetos.html#projeto-banco">Banco de alimentos</a></li>
+            </ul>
+          </li>
           <li><a href="cadastro.html" class="nav-cta" aria-current="page">Quero ajudar</a></li>
         </ul>
       </nav>
@@ -61,6 +69,13 @@
         próximos passos.
       </p>
       <a href="index.html" class="botao botao--primario">Voltar ao início</a>
+    </div>
+
+    <div id="aviso-rascunho" class="container aviso-rascunho" role="status" hidden>
+      <span>Recuperamos um rascunho salvo automaticamente no seu navegador.</span>
+      <button type="button" id="descartar-rascunho" class="botao botao--secundario botao--pequeno">
+        Descartar rascunho
+      </button>
     </div>
 
     <form id="form-cadastro" class="formulario container" novalidate>
@@ -152,10 +167,9 @@
               inputmode="numeric"
               placeholder="00000-000"
               maxlength="9"
+              pattern="\d{5}-\d{3}"
               autocomplete="postal-code"
             />
-          </div>
-          <div class="campo campo--largo">
             <small class="erro" id="erro-cep" role="status" aria-live="polite"></small>
           </div>
 
@@ -284,7 +298,7 @@
       <div class="acoes-formulario">
         <button type="submit" class="botao botao--primario">Enviar cadastro</button>
         <span style="font-size: 0.85rem; color: var(--tinta-suave)">
-          Nenhum dado é compartilhado com terceiros.
+          A consulta do CEP é feita pelo ViaCEP; os demais dados são enviados ao servidor do projeto.
         </span>
       </div>
     </form>
@@ -309,11 +323,12 @@
       </address>
     </div>
     <div class="container">
-      <p class="rodape__creditos">© 2026 Raízes Urbanas. Protótipo para fins de demonstração.</p>
+      <p class="rodape__creditos">© 2026 Raízes Urbanas. Protótipo para fins de demonstração. <a href="spa-demo.html">Ver demonstração de SPA</a></p>
     </div>
   </footer>
 
   <script src="js/mascaras.js" defer></script>
+  <script src="js/rascunho.js" defer></script>
   <script src="js/validacao.js" defer></script>
   <script src="js/main.js" defer></script>
 </body>

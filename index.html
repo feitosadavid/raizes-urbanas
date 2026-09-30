@@ -42,7 +42,15 @@
       <nav id="nav-principal" class="nav-principal" aria-label="Navegação principal">
         <ul>
           <li><a href="index.html" aria-current="page">Início</a></li>
-          <li><a href="projetos.html">Projetos</a></li>
+          <li class="nav-item--submenu">
+            <a href="projetos.html">Projetos<span class="nav-seta" aria-hidden="true"></span></a>
+            <ul class="nav-submenu">
+              <li><a href="projetos.html#projeto-hortas">Hortas comunitárias</a></li>
+              <li><a href="projetos.html#projeto-mutiroes">Mutirões de plantio</a></li>
+              <li><a href="projetos.html#projeto-capacitacao">Capacitação em agroecologia</a></li>
+              <li><a href="projetos.html#projeto-banco">Banco de alimentos</a></li>
+            </ul>
+          </li>
           <li><a href="cadastro.html" class="nav-cta">Quero ajudar</a></li>
         </ul>
       </nav>
@@ -151,7 +159,7 @@
       </address>
     </div>
     <div class="container">
-      <p class="rodape__creditos">© 2026 Raízes Urbanas. Protótipo para fins de demonstração.</p>
+      <p class="rodape__creditos">© 2026 Raízes Urbanas. Protótipo para fins de demonstração. <a href="spa-demo.html">Ver demonstração de SPA</a></p>
     </div>
   </footer>
 

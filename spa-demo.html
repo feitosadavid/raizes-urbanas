@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Demonstração de SPA — Raízes Urbanas</title>
+  <meta
+    name="description"
+    content="Prova de conceito de Single Page Application: um único documento HTML com troca de conteúdo por rota via hash, usando templates em JavaScript."
+  />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600&family=Work+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <a class="pular-conteudo" href="#conteudo-spa">Pular para o conteúdo</a>
+
+  <header class="cabecalho">
+    <div class="container cabecalho__linha">
+      <a href="index.html" class="marca">
+        <svg viewBox="0 0 48 48" aria-hidden="true">
+          <path
+            fill="#1b3b2f"
+            d="M24 4c8 6 14 14 14 22a14 14 0 0 1-28 0c0-8 6-16 14-22Z"
+          />
+        </svg>
+        Raízes Urbanas
+      </a>
+      <nav class="nav-principal" aria-label="Navegação da demonstração de SPA">
+        <ul class="spa-nav">
+          <li><a href="#/inicio">Início</a></li>
+          <li><a href="#/projetos">Projetos</a></li>
+          <li><a href="#/contato">Contato</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo-spa" class="container spa-container">
+    <p class="spa-legenda">
+      Esta página é uma <strong>prova de conceito de SPA</strong>, separada do site principal
+      (que continua como multi-página por escolha deliberada). Aqui existe um único
+      documento HTML, um único contêiner de conteúdo (<code>&lt;div id="app-spa"&gt;</code>) e a
+      troca do que aparece nele é feita em JavaScript puro, através do evento
+      <code>hashchange</code> e de templates (literais de template) que geram o HTML
+      injetado — sem recarregar a página. Clique nos links acima para navegar entre as
+      rotas <code>#/inicio</code>, <code>#/projetos</code> e <code>#/contato</code>.
+    </p>
+    <div id="app-spa" class="spa-app" aria-live="polite"></div>
+  </main>
+
+  <footer class="rodape">
+    <div class="container">
+      <p class="rodape__creditos">
+        <a href="index.html">Voltar ao site principal</a> — © 2026 Raízes Urbanas.
+        Protótipo para fins de demonstração.
+      </p>
+    </div>
+  </footer>
+
+  <script src="js/spa-router.js" defer></script>
+</body>
+</html>

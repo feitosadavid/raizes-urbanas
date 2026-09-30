@@ -72,15 +72,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const campoCidade = document.getElementById("cidade");
     const campoUF = document.getElementById("uf");
     const avisoCEP = document.getElementById("erro-cep");
+    const controlador = new AbortController();
+    const temporizador = setTimeout(() => controlador.abort(), 8000);
 
     avisoCEP.textContent = "Buscando endereço…";
     try {
-      const resposta = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      const resposta = await fetch(`https://viacep.com.br/ws/${cep}/json/`, {
+        signal: controlador.signal,
+      });
+      if (!resposta.ok) throw new Error("Falha na consulta de CEP.");
       const dados = await resposta.json();
       if (dados.erro) {
         // CEP fictício ou inexistente: sem problema, o teste continua —
         // a pessoa só preenche o endereço manualmente.
-        avisoCEP.textContent = "";
+        avisoCEP.textContent = "CEP não encontrado. Preencha o endereço manualmente.";
         return;
       }
       campoLogradouro.value = dados.logradouro || campoLogradouro.value;
@@ -94,16 +99,21 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("numero").focus();
       }
     } catch (falha) {
-      // Falha de rede ao consultar o ViaCEP: também não bloqueia o teste,
-      // só limpa o aviso e segue com preenchimento manual.
-      avisoCEP.textContent = "";
+      // A consulta tem tempo limite e nunca bloqueia o preenchimento manual.
+      avisoCEP.textContent = "Não foi possível consultar o CEP. Preencha o endereço manualmente.";
+    } finally {
+      clearTimeout(temporizador);
     }
   });
 
   function marcarErro(campoId, mensagem) {
     const input = document.getElementById(campoId);
     const container = input.closest(".campo");
-    const erro = container ? container.querySelector("small.erro") : null;
+    const erroInterno = container?.querySelector("small.erro");
+    const erroAdjacente = container?.nextElementSibling?.matches("small.erro")
+      ? container.nextElementSibling
+      : null;
+    const erro = erroInterno || erroAdjacente;
     container?.classList.add("campo--erro");
     if (erro) erro.textContent = mensagem;
     return mensagem ? { campoId, mensagem } : null;
@@ -141,6 +151,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!form.checkValidity()) {
       form.querySelectorAll(":invalid").forEach((campo) => {
         if (!campo.id) return;
+        // A regra personalizada abaixo apresenta uma mensagem mais útil para
+        // datas preenchidas, evitando duplicar o aviso nativo de formato.
+        if (campo.id === "nascimento" && campoNascimento.value) return;
         const rotulo = form.querySelector(`label[for="${campo.id}"]`);
         const nome = rotulo ? rotulo.textContent.replace("*", "").trim() : campo.id;
         erros.push(marcarErro(campo.id, `Verifique o campo “${nome}”.`));
@@ -239,6 +252,10 @@ document.addEventListener("DOMContentLoaded", () => {
       painelSucesso.hidden = false;
       form.hidden = true;
       document.querySelector(".form-intro")?.setAttribute("hidden", "");
+      // Cadastro confirmado: o rascunho salvo em localStorage não faz mais
+      // sentido, então é removido (função definida em js/rascunho.js).
+      limparRascunhoCadastro();
+      document.getElementById("aviso-rascunho")?.setAttribute("hidden", "");
       painelSucesso.scrollIntoView({ behavior: "smooth", block: "start" });
     } catch (falha) {
       listaResumoErros.innerHTML = "";

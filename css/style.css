@@ -164,6 +164,48 @@ textarea:focus-visible {
   padding: 0;
 }
 
+.nav-principal .nav-item--submenu {
+  position: relative;
+}
+
+.nav-seta {
+  display: inline-block;
+  width: 0.42rem;
+  height: 0.42rem;
+  margin: 0 0 0.18rem 0.45rem;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+}
+
+.nav-principal .nav-submenu {
+  position: absolute;
+  top: 100%;
+  left: -0.75rem;
+  z-index: 30;
+  display: grid;
+  gap: 0.15rem;
+  min-width: 16rem;
+  padding: 0.45rem;
+  background: var(--branco);
+  border: 1px solid var(--linho-alt);
+  border-radius: var(--raio);
+  box-shadow: 0 6px 18px rgba(16, 37, 29, 0.12);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(0.25rem);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.nav-principal .nav-item--submenu:hover > .nav-submenu,
+.nav-principal .nav-item--submenu:focus-within > .nav-submenu {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
 .nav-principal a {
   text-decoration: none;
   color: var(--tinta);
@@ -176,6 +218,19 @@ textarea:focus-visible {
 .nav-principal a[aria-current="page"] {
   border-bottom-color: var(--dourado);
   color: var(--verde-mata-escuro);
+}
+
+.nav-principal .nav-submenu a {
+  display: block;
+  padding: 0.55rem 0.75rem;
+  border: 0;
+  border-radius: var(--raio);
+  white-space: nowrap;
+}
+
+.nav-principal .nav-submenu a:hover {
+  background: var(--linho);
+  border: 0;
 }
 
 .nav-cta {
@@ -206,6 +261,25 @@ textarea:focus-visible {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.9rem;
+  }
+  .nav-principal .nav-item--submenu {
+    width: 100%;
+  }
+  .nav-principal .nav-submenu {
+    position: static;
+    width: 100%;
+    min-width: 0;
+    gap: 0.25rem;
+    padding: 0.25rem 0 0.15rem 0.9rem;
+    border: 0;
+    box-shadow: none;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: none;
+  }
+  .nav-principal .nav-submenu a {
+    white-space: normal;
   }
   .cabecalho__linha {
     flex-wrap: wrap;
@@ -251,6 +325,11 @@ textarea:focus-visible {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
+}
+
+.botao--pequeno {
+  padding: 0.45rem 0.9rem;
+  font-size: 0.85rem;
 }
 
 /* ---------- Herói (index) ---------- */
@@ -575,6 +654,24 @@ textarea {
   padding-left: 1.2rem;
 }
 
+.aviso-rascunho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  background: var(--verde-suave);
+  border: 1px solid var(--verde-mata);
+  color: var(--verde-mata-escuro);
+  border-radius: var(--raio);
+  padding: 0.9rem 1.2rem;
+  margin: 0 0 1.2rem;
+}
+
+.aviso-rascunho[hidden] {
+  display: none;
+}
+
 .painel-sucesso {
   background: var(--verde-mata);
   color: var(--branco);
@@ -653,4 +750,96 @@ textarea {
   .rodape__grade {
     grid-template-columns: 1fr;
   }
+}
+
+/* ---------- Demonstração de SPA (spa-demo.html) ---------- */
+
+.spa-container {
+  padding: 2.4rem 0 3rem;
+}
+
+.spa-legenda {
+  font-size: 0.9rem;
+  color: var(--tinta-suave);
+  max-width: 42rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--linho-alt);
+}
+
+.spa-legenda code {
+  background: var(--linho);
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  font-size: 0.85em;
+}
+
+.spa-nav {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+}
+
+.spa-nav a {
+  text-decoration: none;
+  color: var(--tinta);
+  padding-bottom: 0.2rem;
+  border-bottom: 2px solid transparent;
+}
+
+.spa-nav a.ativo {
+  color: var(--verde-mata-escuro);
+  border-bottom-color: var(--dourado);
+  font-weight: 600;
+}
+
+.spa-app {
+  padding-top: 1.6rem;
+}
+
+.spa-app:focus {
+  outline: none; /* o foco é só para leitores de tela anunciarem a troca de rota */
+}
+
+.spa-secao h1 {
+  margin-bottom: 0.8rem;
+}
+
+.spa-cards {
+  display: grid;
+  gap: 1.2rem;
+  margin-top: 1rem;
+}
+
+.spa-card {
+  background: var(--branco);
+  border-left: 4px solid var(--verde-mata);
+  border-radius: 0 var(--raio) var(--raio) 0;
+  padding: 1.4rem 1.6rem;
+}
+
+.spa-card:nth-of-type(2) { border-left-color: var(--dourado); }
+.spa-card:nth-of-type(3) { border-left-color: var(--terra); }
+.spa-card:nth-of-type(4) { border-left-color: var(--verde-mata); }
+
+.spa-card h2 {
+  font-size: 1.1rem;
+  margin-bottom: 0.3rem;
+}
+
+.spa-lista-numeros {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+}
+
+.spa-lista-numeros strong {
+  display: block;
+  font-family: var(--fonte-titulo);
+  font-size: 1.6rem;
+  color: var(--verde-mata-escuro);
 }
