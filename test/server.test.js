@@ -67,6 +67,25 @@ test("serve a página com headers de segurança e protege arquivos internos", as
       `http://127.0.0.1:${porta}/api/cadastros`,
     );
     assert.equal(administrativo.status, 404);
+
+    const asset = await fetch(`http://127.0.0.1:${porta}/css/style.css`, {
+      headers: { "accept-encoding": "gzip" },
+    });
+    assert.equal(asset.status, 200);
+    assert.equal(asset.headers.get("content-encoding"), "gzip");
+    assert.ok(asset.headers.get("etag"));
+
+    const notModified = await fetch(`http://127.0.0.1:${porta}/css/style.css`, {
+      headers: { "if-none-match": asset.headers.get("etag") },
+    });
+    assert.equal(notModified.status, 304);
+
+    const tipoInvalido = await fetch(`http://127.0.0.1:${porta}/api/cadastro`, {
+      method: "POST",
+      headers: { "content-type": "text/plain" },
+      body: "{}",
+    });
+    assert.equal(tipoInvalido.status, 415);
   } finally {
     await new Promise((resolve, reject) =>
       servidor.close((erro) => (erro ? reject(erro) : resolve())),
