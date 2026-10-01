@@ -33,7 +33,10 @@ function coletarRascunhoCadastro(form) {
 /** Salva o estado atual do formulário em localStorage. Falha em silêncio se indisponível. */
 function salvarRascunhoCadastro(form) {
   try {
-    localStorage.setItem(CHAVE_RASCUNHO_CADASTRO, JSON.stringify(coletarRascunhoCadastro(form)));
+    localStorage.setItem(
+      CHAVE_RASCUNHO_CADASTRO,
+      JSON.stringify(coletarRascunhoCadastro(form)),
+    );
   } catch (falha) {
     // Modo de navegação privada, quota excedida etc.: sem problema, o
     // formulário continua funcionando normalmente, só não fica com rascunho.
@@ -76,7 +79,9 @@ function restaurarRascunhoCadastro(form) {
 
     if (campo.type === "checkbox") {
       campo.checked =
-        campo.name === "termo" ? Boolean(valor) : Array.isArray(valor) && valor.includes(campo.value);
+        campo.name === "termo"
+          ? Boolean(valor)
+          : Array.isArray(valor) && valor.includes(campo.value);
     } else if (campo.type === "radio") {
       campo.checked = campo.value === valor;
     } else {
@@ -129,3 +134,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+if (typeof globalThis !== "undefined") {
+  Object.assign(globalThis, {
+    coletarRascunhoCadastro,
+    salvarRascunhoCadastro,
+    limparRascunhoCadastro,
+    restaurarRascunhoCadastro,
+  });
+}

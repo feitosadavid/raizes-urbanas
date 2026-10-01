@@ -89,3 +89,14 @@ if (typeof module !== "undefined") {
     somenteDigitos,
   };
 }
+
+if (typeof globalThis !== "undefined") {
+  Object.assign(globalThis, {
+    mascararCPF,
+    mascararTelefone,
+    mascararCEP,
+    mascararData,
+    somenteDigitos,
+    ligarMascara,
+  });
+}

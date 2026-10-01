@@ -6,10 +6,17 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "test": "node --test",
-    "check": "node --check server.js && node --check js/main.js && node --check js/mascaras.js && node --check js/rascunho.js && node --check js/spa-router.js && node --check js/validacao.js"
+    "check": "node --check server.js && node --check vite.config.mjs && node --check js/main.js && node --check js/mascaras.js && node --check js/rascunho.js && node --check js/spa-router.js && node --check js/validacao.js"
   },
   "engines": {
     "node": ">=18"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "vite": "^8.3.1"
   }
 }

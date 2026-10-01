@@ -9,7 +9,11 @@ const zlib = require("zlib");
 const PORTA = Number(process.env.PORT || 3000);
 const HOST = process.env.HOST || "0.0.0.0";
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "";
-const RAIZ_DO_SITE = __dirname;
+const DIST_DO_SITE = path.join(__dirname, "dist");
+const RAIZ_DO_SITE =
+  process.env.NODE_ENV === "production" && fs.existsSync(DIST_DO_SITE)
+    ? DIST_DO_SITE
+    : __dirname;
 const ARQUIVO_DE_DADOS = path.join(__dirname, "data", "cadastros.json");
 const LIMITE_CORPO = 1e6;
 const PAGINAS_PUBLICAS = new Set([
@@ -267,7 +271,9 @@ function tratarArquivoEstatico(req, res, url) {
   const relativoURL = relativo.split(path.sep).join("/");
   const extensao = path.extname(caminhoAbsoluto).toLowerCase();
   const diretorioPublico =
-    relativoURL.startsWith("css/") || relativoURL.startsWith("js/");
+    relativoURL.startsWith("css/") ||
+    relativoURL.startsWith("js/") ||
+    relativoURL.startsWith("assets/");
   if (
     relativo.startsWith("..") ||
     path.isAbsolute(relativo) ||
