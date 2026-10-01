@@ -125,6 +125,13 @@ Em Windows com a política do PowerShell restrita, use `npm.cmd run check` e
 `npm.cmd test`. As variáveis opcionais estão em `.env.example`: `PORT`, `HOST`
 e `ADMIN_TOKEN`.
 
+Para gerar a versão de produção, execute `npm run build`. O Vite cria a pasta
+`dist/` com HTML, CSS e JavaScript agrupados e minificados. Em produção, o
+servidor serve automaticamente essa pasta quando `NODE_ENV=production`; em
+desenvolvimento, continua servindo os ficheiros-fonte para facilitar a edição.
+Na medição atual, a build reduziu o CSS em aproximadamente `23,14%`, o JavaScript
+em `51,24%` e o conjunto HTML/CSS/JavaScript em `21,85%`, antes da compressão HTTP.
+
 ---
 
 ## 🔌 Rotas do servidor
