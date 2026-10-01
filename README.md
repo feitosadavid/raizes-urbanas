@@ -184,7 +184,8 @@ contraste e leitor de tela, além de uma ferramenta como Lighthouse, axe ou WAVE
 
 ## 🔀 Fluxo Git e colaboração
 
-O repositório segue GitFlow com estas branches:
+O repositório segue GitFlow, com mudanças pequenas e rastreáveis por Issue e
+pull request (PR). As branches têm estas responsabilidades:
 
 - `main`: representa apenas versões de lançamento estáveis e deve receber alterações por pull request.
 - `develop`: branch permanente de integração do desenvolvimento contínuo; recebe funcionalidades concluídas e prepara a próxima versão.
@@ -196,15 +197,28 @@ O fluxo normal é `feature/*` → `develop` → `release/*` → `main`. Um lanç
 deve ser marcado com uma tag, como `v1.0.0`, e sincronizado novamente em `develop`.
 Correções urgentes seguem `hotfix/*` → `main` e depois `hotfix/*` → `develop`.
 
-1. Crie uma branch descritiva a partir de `develop`.
-2. Faça commits pequenos e objetivos usando verbos no presente.
-3. Abra um pull request da `feature/*` para `develop` com testes e impacto de acessibilidade.
-4. Aguarde o GitHub Actions e pelo menos uma revisão antes do merge.
-5. Crie `release/*` quando o conjunto de funcionalidades estiver pronto para validação final.
-6. Faça merge em `main`, crie a tag e sincronize a versão em `develop`.
+### Issues, commits e PRs
 
-O workflow em `.github/workflows/ci.yml` executa checagem de sintaxe e testes em
-pushes para `main` e em pull requests.
+1. Registre a necessidade em uma Issue com contexto, escopo, critérios de
+   aceite e, quando aplicável, impacto em acessibilidade, dados ou deploy.
+2. Organize as Issues em marcos: **Fundação**, **Acessibilidade e qualidade**,
+   **Produção** e **Evolução**. Feche cada marco somente após seus critérios de
+   aceite e validações estarem concluídos.
+3. Crie uma branch descritiva a partir de `develop`, como
+   `feature/42-filtro-projetos` ou `fix/57-fallback-spa`.
+4. Faça commits pequenos no formato `<tipo>: <descrição curta>`, usando os
+   tipos `feat`, `fix`, `docs`, `test`, `refactor` ou `chore`; cada commit deve
+   representar uma mudança coerente.
+5. Abra um PR vinculando a Issue (por exemplo, `Closes #42`) e descrevendo
+   solução, testes executados, impacto de acessibilidade e riscos de deploy.
+6. Aguarde o CI e pelo menos uma revisão antes do merge. O PR de uma
+   `feature/*` vai para `develop`; o PR de `release/*` ou `hotfix/*` segue para
+   `main` conforme o fluxo acima.
+
+O CI executa checagem de sintaxe, build de produção e testes em pushes para
+`main`/`develop` e em PRs destinados a essas branches. Um merge só deve ser
+feito quando os critérios de aceite da Issue, as validações e a revisão
+estiverem concluídos.
 
 ---
 
@@ -285,6 +299,22 @@ O arquivo `render.yaml` prepara um Web Service no Render:
 2. Use o blueprint `render.yaml` ou configure `npm install` como build e `npm start` como start.
 3. Defina `ADMIN_TOKEN` como segredo no painel do provedor.
 4. Verifique a rota `/` e o fluxo completo do formulário após o deploy.
+
+### Contrato de roteamento da demo SPA
+
+A demo usa **hash routing**: as rotas são `#/inicio`, `#/projetos` e
+`#/contato`. O fragmento depois de `#` não é enviado pelo navegador na
+requisição HTTP. Portanto, ao abrir diretamente ou atualizar uma URL como
+`https://seu-servico.onrender.com/spa-demo.html#/projetos`, o servidor recebe
+apenas `GET /spa-demo.html`, entrega o documento estático e o
+`spa-router.js` lê o hash no navegador para renderizar `projetos`.
+
+Esse contrato evita a necessidade de um fallback server-side para cada rota da
+SPA. A página base `/spa-demo.html` precisa continuar publicada no build; uma
+URL sem o arquivo base, como `/projetos` (sem `#`), não é uma rota da demo e
+deve retornar 404. O teste de publicação deve cobrir: acesso inicial a
+`/spa-demo.html`, acesso direto a cada URL com hash, refresh em cada rota,
+voltar/avançar do navegador e a navegação sem recarregar o documento.
 
 O deploy real depende de uma conta e credenciais do provedor; elas não ficam
 armazenadas no repositório.
